@@ -62,6 +62,9 @@
   .notes{margin-top:26px;background:rgba(94,107,82,.09);border:1px solid rgba(94,107,82,.25);border-radius:12px;padding:16px 18px}
   .notes h3{font-family:Fraunces,serif;font-size:15px;font-weight:600;margin-bottom:6px}
   .notes ul{margin:0;padding-left:18px;line-height:1.6}
+  .elevate{margin-top:18px;background:rgba(216,154,62,.10);border:1px solid rgba(216,154,62,.40);border-radius:12px;padding:16px 18px}
+  .elevate h3{font-family:Fraunces,serif;font-size:15px;font-weight:600;margin-bottom:6px;color:#9a6a1c}
+  .elevate ul{margin:0;padding-left:18px;line-height:1.6}
   .source{margin-top:28px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
   .source a{word-break:break-all}
   label.lbl{display:block;font-weight:700;font-size:14px;margin:6px 0}
@@ -214,6 +217,7 @@ function viewDetail(){
     <h2 class="section" style="margin-top:30px">Method</h2>
     <ol class="steps">${(r.steps||[]).map((s,i)=>`<li><span class="n">${i+1}</span><span class="txt">${esc(convert(s,imp))}</span></li>`).join("")}</ol>
     ${(r.notes&&r.notes.length)?`<div class="notes"><h3>Good to know</h3><ul>${r.notes.map(n=>`<li>${esc(convert(n,imp))}</li>`).join("")}</ul></div>`:""}
+    ${(r.elevate&&r.elevate.length)?`<div class="elevate"><h3>✨ Elevate it</h3><ul>${r.elevate.map(n=>`<li>${esc(convert(n,imp))}</li>`).join("")}</ul></div>`:""}
     ${r.source?`<div class="source">Source: <a href="${esc(r.source)}" target="_blank" rel="noreferrer">${esc(r.source)}</a></div>`:""}
   </div>`;
 }
@@ -258,6 +262,8 @@ function viewForm(){
     <textarea class="inp" id="f_steps" rows="6" placeholder="Mix dry ingredients.&#10;Whisk in eggs and milk.">${esc(arr('steps'))}</textarea>
     <label class="lbl">Notes / tips <small>— optional</small></label>
     <textarea class="inp" id="f_notes" rows="3" placeholder="Rest batter 30 min.">${esc(arr('notes'))}</textarea>
+    <label class="lbl">✨ Elevate it <small>— optional chef's tips, one per line</small></label>
+    <textarea class="inp" id="f_elevate" rows="3" placeholder="Add 1 tsp allspice with the onions for warmth.">${esc(arr('elevate'))}</textarea>
     <label class="lbl">Source link <small>— optional</small></label>
     <input class="inp" id="f_source" placeholder="https://… or a cookbook name" value="${v('source')}">
     <button class="primaryBtn" id="saveBtn">${editing?"Save changes":"Save to my shelf"}</button>
@@ -308,7 +314,7 @@ function attach(){
       if(!o.title){errEl.textContent="No title found in that code.";return;}
       state.draft={
         title:o.title||"",servings:o.servings||"",time:o.time||"",source:o.source||"",
-        ingredients:o.ingredients||[],steps:o.steps||[],notes:o.notes||[],image:"",rating:o.rating||0
+        ingredients:o.ingredients||[],steps:o.steps||[],notes:o.notes||[],elevate:o.elevate||[],image:"",rating:o.rating||0
       };
       okEl.textContent="Recipe read successfully — opening for review…";
       setTimeout(()=>go("add"),400);
@@ -331,7 +337,7 @@ function attach(){
         added:editing?(activeRecipe().added||Date.now()):Date.now(),
         title,servings:g("f_servings").trim(),time:g("f_time").trim(),
         image:target.image||"",source:g("f_source").trim(),rating:target.rating||0,
-        ingredients:lines("f_ing"),steps:lines("f_steps"),notes:lines("f_notes")
+        ingredients:lines("f_ing"),steps:lines("f_steps"),notes:lines("f_notes"),elevate:lines("f_elevate")
       };
       const next=editing?recipes.map(x=>x.id===rec.id?rec:x):[rec,...recipes];
       persist(next);state.draft={};go("detail",rec.id);
