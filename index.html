@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Recepti">
+<meta name="theme-color" content="#C0492E">
+<title>Recepti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#FBF7F0;--paper:#FFFDF8;--ink:#2B2118;--clay:#C0492E;--clayDk:#9E3823;--sage:#5E6B52;--line:#E6DDCD;--muted:#8A7E6E;--gold:#D89A3E}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:Karla,sans-serif;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+  button,input,textarea,select{font-family:inherit;color:inherit;outline:none}
+  a{color:var(--sage)}
+  .spin{animation:sp 1s linear infinite;display:inline-block}@keyframes sp{to{transform:rotate(360deg)}}
+  .fade{animation:fd .35s ease both}@keyframes fd{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  header{position:sticky;top:0;z-index:10;background:rgba(251,247,240,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:16px 20px;padding-top:calc(16px + env(safe-area-inset-top));display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:baseline;gap:8px;cursor:pointer}
+  .brand b{font-family:Fraunces,serif;font-size:26px;font-weight:600;font-style:italic;color:var(--clay)}
+  .brand span{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+  .hbtns{display:flex;gap:8px}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:var(--paper);font-weight:700;font-size:13px;cursor:pointer}
+  .pill.primary{background:var(--clay);color:#fff;border-color:var(--clay)}
+  main{max-width:760px;margin:0 auto;padding:20px 20px 90px}
+  .controls{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:160px;padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:var(--paper);font-size:14px}
+  .sortsel{padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:var(--paper);font-size:13px;font-weight:700;cursor:pointer}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+  .card{cursor:pointer;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:transform .15s}
+  .card:hover{transform:translateY(-3px)}
+  .card .img{height:140px;background-size:cover;background-position:center}
+  .card .body{padding:12px 14px 16px}
+  .card h3{font-family:Fraunces,serif;font-size:18px;font-weight:600;line-height:1.2;margin-bottom:6px}
+  .card .meta{font-size:12px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .stars{color:var(--gold);letter-spacing:1px;font-size:13px}
+  .stars .empty{color:var(--line)}
+  .back{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:var(--muted);cursor:pointer;font-weight:700;font-size:14px;padding:4px 0;margin-bottom:12px}
+  h1.page{font-family:Fraunces,serif;font-size:28px;font-weight:600;display:flex;align-items:center;gap:10px;margin:4px 0 8px}
+  .hero{width:100%;max-height:280px;object-fit:cover;border-radius:16px;margin-bottom:18px}
+  .titlerow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  h1.recipe{font-family:Fraunces,serif;font-size:32px;font-weight:600;line-height:1.1;margin-bottom:6px}
+  .iconbtn{background:none;border:none;cursor:pointer;padding:8px;display:inline-flex;font-size:18px}
+  .detmeta{display:flex;gap:14px;color:var(--muted);font-size:13px;margin-bottom:4px;align-items:center;flex-wrap:wrap}
+  .sectionrow{display:flex;justify-content:space-between;align-items:center;margin:26px 0 10px}
+  h2.section{font-family:Fraunces,serif;font-size:20px;font-weight:600}
+  .toggle{display:flex;background:var(--line);border-radius:999px;padding:3px;cursor:pointer;font-size:12px;font-weight:700}
+  .toggle span{padding:5px 12px;border-radius:999px;color:var(--muted)}
+  .toggle span.on{background:var(--paper);color:var(--ink)}
+  ul.ings{list-style:none}
+  ul.ings li{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer}
+  .box{width:22px;height:22px;flex-shrink:0;border-radius:6px;margin-top:1px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;line-height:1}
+  .box.on{background:var(--sage);border-color:var(--sage)}
+  li.done .txt{text-decoration:line-through;color:var(--muted)}
+  ol.steps{list-style:none}
+  ol.steps li{display:flex;gap:14px;margin-bottom:16px}
+  ol.steps .n{font-family:Fraunces,serif;font-style:italic;font-size:22px;color:var(--clay);line-height:1;min-width:28px}
+  ol.steps .txt{line-height:1.55}
+  .notes{margin-top:26px;background:rgba(94,107,82,.09);border:1px solid rgba(94,107,82,.25);border-radius:12px;padding:16px 18px}
+  .notes h3{font-family:Fraunces,serif;font-size:15px;font-weight:600;margin-bottom:6px}
+  .notes ul{margin:0;padding-left:18px;line-height:1.6}
+  .source{margin-top:28px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+  .source a{word-break:break-all}
+  label.lbl{display:block;font-weight:700;font-size:14px;margin:6px 0}
+  label.lbl small{color:var(--muted);font-weight:400}
+  .inp{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--paper);font-size:15px;margin-bottom:12px}
+  textarea.inp{resize:vertical}
+  .row{display:flex;gap:10px}
+  .dropzone{border-radius:14px;margin-bottom:16px;border:2px dashed var(--line);cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--paper);color:var(--muted);position:relative;background-size:cover;background-position:center}
+  .dropzone .x{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);border:none;border-radius:999px;padding:6px 10px;cursor:pointer;color:#fff}
+  .rate{display:flex;gap:6px;font-size:28px;color:var(--line);cursor:pointer;margin-bottom:12px}
+  .rate .on{color:var(--gold)}
+  .primaryBtn{display:inline-flex;align-items:center;gap:8px;margin-top:8px;padding:13px 22px;border-radius:999px;border:none;background:var(--clay);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
+  .primaryBtn:disabled{opacity:.5}
+  .ghostBtn{margin-top:8px;margin-left:8px;padding:13px 18px;border-radius:999px;border:1px solid var(--line);background:var(--paper);font-weight:700;font-size:14px;cursor:pointer}
+  .empty{text-align:center;padding:60px 20px}
+  .empty h2{font-family:Fraunces,serif;font-size:24px;margin-bottom:8px}
+  .empty p{color:var(--muted);margin-bottom:24px;line-height:1.5}
+  .center{display:flex;justify-content:center;padding:60px}
+  .err{color:var(--clayDk);font-size:14px;margin:6px 0}
+  .ok{color:var(--sage);font-size:14px;margin:6px 0;font-weight:700}
+  .hint{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.5}
+  .codebox{font-family:monospace;font-size:12px}
+  .callout{background:rgba(192,73,46,.07);border:1px solid rgba(192,73,46,.25);border-radius:12px;padding:14px 16px;margin:14px 0;font-size:13px;line-height:1.55}
+  .callout b{color:var(--clay)}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand" onclick="go('list')"><b>Recepti</b><span>my kitchen</span></div>
+  <div class="hbtns" id="hbtns"></div>
+</header>
+<main id="app"><div class="center"><div class="spin">⏳</div></div></main>
+<div id="status" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:50;padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom));font-size:13px;font-weight:700;text-align:center"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDK0x8ZuSmE3eP4YVZ-PTDvIRvjso3rgp4",
+  authDomain: "miserecepti.firebaseapp.com",
+  databaseURL: "https://miserecepti-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "miserecepti",
+  storageBucket: "miserecepti.firebasestorage.app",
+  messagingSenderId: "867224224551",
+  appId: "1:867224224551:web:bae0b289e34ef0c0b09f02"
+};
+
+const DATA_PATH = "recepti/recipes";
+const db = getDatabase(initializeApp(firebaseConfig));
+const dataRef = ref(db, DATA_PATH);
+
+let recipes = [];
+let state = { view:"list", activeId:null, sort:"recent", q:"", checked:{}, imperial:false, draft:{} };
+let connected = false;
+window.go = go;
+
+function showStatus(msg,color){const el=document.getElementById("status");el.style.display="block";el.style.background=color;el.style.color="#fff";el.innerHTML=msg;}
+function hideStatus(){document.getElementById("status").style.display="none";}
+
+const connectTimeout=setTimeout(()=>{ if(!connected){
+  document.getElementById("app").innerHTML=`<div class="empty fade"><h2>Can't reach the database</h2><p>Loaded, but couldn't connect to Firebase. This is normal inside Claude's preview. On your GitHub Pages link it connects fine.</p></div>`;
+  showStatus("⚠ Not connected — open this on your live GitHub Pages URL","#9E3823");
+}},6000);
+
+onValue(dataRef,(snap)=>{
+  connected=true; clearTimeout(connectTimeout); hideStatus();
+  const val=snap.val();
+  recipes=Array.isArray(val)?val:(val?Object.values(val):[]);
+  render();
+},(err)=>{ connected=true; clearTimeout(connectTimeout); showStatus("⚠ Read denied: "+err.code+" — check Rules tab","#9E3823"); });
+
+function persist(list){ recipes=list; set(dataRef,list).catch(e=>showStatus("⚠ Save failed: "+e.code,"#9E3823")); }
+
+/* ---------- unit conversion ---------- */
+const CONV={g:{f:v=>v*0.035274,l:"oz"},kg:{f:v=>v*2.20462,l:"lb"},ml:{f:v=>v*0.033814,l:"fl oz"},l:{f:v=>v*4.22675,l:"cup"},"°c":{f:v=>v*9/5+32,l:"°F"},cm:{f:v=>v*0.393701,l:"in"}};
+const round=n=>Math.round(n*100)/100;
+function convert(text,imperial){ if(!imperial)return text;
+  return text.replace(/(\d+(?:[.,]\d+)?)\s?(kg|g|ml|l|°C|cm)\b/gi,(m,num,unit)=>{const c=CONV[unit.toLowerCase()];if(!c)return m;return round(c.f(parseFloat(num.replace(",","."))))+" "+c.l;}); }
+const esc=s=>(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const starStr=n=>{n=n||0;let s="";for(let i=1;i<=5;i++)s+=`<span class="${i<=n?'':'empty'}">★</span>`;return s;};
+
+/* ---------- nav ---------- */
+function go(view,id){ if(view!=="detail")state.checked={}; state.view=view; if(id!==undefined)state.activeId=id; render(); }
+function activeRecipe(){ return recipes.find(r=>r.id===state.activeId); }
+
+/* ---------- render ---------- */
+function render(){
+  const hb=document.getElementById("hbtns");
+  hb.innerHTML = state.view==="list"
+    ? `<button class="pill" onclick="go('import')">✨ Import</button><button class="pill primary" onclick="go('add')">＋ Add</button>` : "";
+  const app=document.getElementById("app");
+  app.innerHTML = state.view==="list"?viewList()
+    : state.view==="detail"?viewDetail()
+    : state.view==="import"?viewImport()
+    : viewForm();
+  attach();
+}
+
+function sortRecipes(list){
+  const a=[...list];
+  if(state.sort==="recent") a.sort((x,y)=>(y.added||0)-(x.added||0));
+  else if(state.sort==="rating") a.sort((x,y)=>(y.rating||0)-(x.rating||0));
+  else if(state.sort==="name") a.sort((x,y)=>(x.title||"").localeCompare(y.title||""));
+  else if(state.sort==="time") a.sort((x,y)=>(parseInt(x.time)||999)-(parseInt(y.time)||999));
+  return a;
+}
+
+function viewList(){
+  const filtered=recipes.filter(r=>!state.q||(r.title||"").toLowerCase().includes(state.q.toLowerCase()));
+  const list=sortRecipes(filtered);
+  const controls=`<div class="controls">
+    <input class="search" id="search" placeholder="Search recipes…" value="${esc(state.q)}">
+    <select class="sortsel" id="sortsel">
+      <option value="recent" ${state.sort==="recent"?"selected":""}>Recently added</option>
+      <option value="rating" ${state.sort==="rating"?"selected":""}>Highest rated</option>
+      <option value="name" ${state.sort==="name"?"selected":""}>Name A–Z</option>
+      <option value="time" ${state.sort==="time"?"selected":""}>Quickest</option>
+    </select></div>`;
+  if(!recipes.length) return `<div class="empty fade"><h2>Your shelf is empty</h2>
+    <p>Tap <b>Import</b> to paste a recipe code from Claude,<br>or <b>Add</b> to write one yourself.</p>
+    <button class="pill primary" onclick="go('import')">✨ Import a recipe</button></div>`;
+  if(!list.length) return controls+`<div class="empty fade"><p>No recipes match "${esc(state.q)}".</p></div>`;
+  return controls+`<div class="grid fade">`+list.map(r=>`
+    <div class="card" onclick="go('detail','${r.id}')">
+      <div class="img" style="background:${r.image?`url(${r.image})`:`linear-gradient(135deg,#5E6B5222,#C0492E22)`};background-size:cover;background-position:center"></div>
+      <div class="body"><h3>${esc(r.title)}</h3>
+        <div class="meta">
+          ${r.rating?`<span class="stars">${starStr(r.rating)}</span>`:""}
+          ${r.time?`<span>${esc(r.time)}</span>`:""}${r.servings?`<span>${esc(r.servings)}</span>`:""}
+        </div></div></div>`).join("")+`</div>`;
+}
+
+function viewDetail(){
+  const r=activeRecipe(); if(!r)return go("list");
+  const imp=state.imperial;
+  return `<div class="fade">
+    <button class="back" onclick="go('list')">← Back</button>
+    ${r.image?`<img class="hero" src="${r.image}">`:""}
+    <div class="titlerow"><h1 class="recipe">${esc(r.title)}</h1>
+      <div><button class="iconbtn" style="color:var(--sage)" onclick="go('edit','${r.id}')">✎</button>
+      <button class="iconbtn" style="color:var(--clayDk)" onclick="delRecipe('${r.id}')">🗑</button></div></div>
+    <div class="detmeta">
+      ${r.rating?`<span class="stars" style="font-size:16px">${starStr(r.rating)}</span>`:""}
+      ${r.time?`<span>⏱ ${esc(r.time)}</span>`:""}${r.servings?`<span>🍽 ${esc(r.servings)}</span>`:""}</div>
+    <div class="sectionrow"><h2 class="section">Ingredients</h2>
+      <div class="toggle" onclick="toggleUnit()"><span class="${imp?'':'on'}">Metric</span><span class="${imp?'on':''}">Imperial</span></div></div>
+    <ul class="ings">${(r.ingredients||[]).map((ing,i)=>{const d=state.checked[i];
+      return `<li class="${d?'done':''}" onclick="toggleCheck(${i})"><span class="box ${d?'on':''}">${d?'✓':''}</span><span class="txt">${esc(convert(ing,imp))}</span></li>`;}).join("")}</ul>
+    <h2 class="section" style="margin-top:30px">Method</h2>
+    <ol class="steps">${(r.steps||[]).map((s,i)=>`<li><span class="n">${i+1}</span><span class="txt">${esc(convert(s,imp))}</span></li>`).join("")}</ol>
+    ${(r.notes&&r.notes.length)?`<div class="notes"><h3>Good to know</h3><ul>${r.notes.map(n=>`<li>${esc(convert(n,imp))}</li>`).join("")}</ul></div>`:""}
+    ${r.source?`<div class="source">Source: <a href="${esc(r.source)}" target="_blank" rel="noreferrer">${esc(r.source)}</a></div>`:""}
+  </div>`;
+}
+
+function viewImport(){
+  return `<div class="fade">
+    <button class="back" onclick="go('list')">← Back</button>
+    <h1 class="page">✨ Import a recipe</h1>
+    <div class="callout">
+      <b>How this works:</b> open Claude, paste a recipe <b>link</b> or the <b>copied text</b>, and ask:
+      <i>"Turn this into a recipe code for my app."</i> Claude replies with a line of code — paste it below.
+    </div>
+    <label class="lbl">Recipe code from Claude</label>
+    <textarea class="inp codebox" id="codeIn" rows="6" placeholder='{"title":"…","ingredients":[…],"steps":[…]}'></textarea>
+    <div class="err" id="impErr"></div><div class="ok" id="impOk"></div>
+    <button class="primaryBtn" id="impBtn">Add to my shelf</button>
+    <button class="ghostBtn" onclick="go('add')">Write one manually instead</button>
+    <p class="hint">The code is just structured text (JSON). You can also edit everything after importing — add a photo, set a rating, tweak steps.</p>
+  </div>`;
+}
+
+function viewForm(){
+  const editing=state.view==="edit";
+  const r=editing?activeRecipe():state.draft;
+  const v=(k,d="")=>esc(r[k]!=null?r[k]:d);
+  const arr=k=>(r[k]||[]).join("\n");
+  const rating=r.rating||0;
+  return `<div class="fade">
+    <button class="back" onclick="go('${editing?'detail':'list'}')">← Back</button>
+    <h1 class="page">${editing?"Edit recipe":"Add a recipe"}</h1>
+    <div class="dropzone" id="drop" style="${r.image?`height:200px;background-image:url(${r.image})`:'height:110px'}">
+      ${r.image?`<button class="x" id="rmImg">✕ remove</button>`:`<span>📷 Add a photo of the meal</span>`}</div>
+    <input type="file" id="file" accept="image/*" style="display:none">
+    <input class="inp" id="f_title" placeholder="Recipe name" style="font-family:Fraunces,serif;font-size:18px" value="${v('title')}">
+    <label class="lbl">Your rating</label>
+    <div class="rate" id="rate">${[1,2,3,4,5].map(i=>`<span data-n="${i}" class="${i<=rating?'on':''}">★</span>`).join("")}</div>
+    <div class="row"><input class="inp" id="f_servings" placeholder="Servings (e.g. 4)" value="${v('servings')}">
+      <input class="inp" id="f_time" placeholder="Time (e.g. 45 min)" value="${v('time')}"></div>
+    <label class="lbl">Ingredients <small>— one per line, metric</small></label>
+    <textarea class="inp" id="f_ing" rows="6" placeholder="200 g flour&#10;2 eggs&#10;300 ml milk">${esc(arr('ingredients'))}</textarea>
+    <label class="lbl">Steps <small>— one per line</small></label>
+    <textarea class="inp" id="f_steps" rows="6" placeholder="Mix dry ingredients.&#10;Whisk in eggs and milk.">${esc(arr('steps'))}</textarea>
+    <label class="lbl">Notes / tips <small>— optional</small></label>
+    <textarea class="inp" id="f_notes" rows="3" placeholder="Rest batter 30 min.">${esc(arr('notes'))}</textarea>
+    <label class="lbl">Source link <small>— optional</small></label>
+    <input class="inp" id="f_source" placeholder="https://… or a cookbook name" value="${v('source')}">
+    <button class="primaryBtn" id="saveBtn">${editing?"Save changes":"Save to my shelf"}</button>
+  </div>`;
+}
+
+/* ---------- interactions ---------- */
+window.toggleUnit=()=>{state.imperial=!state.imperial;render();};
+window.toggleCheck=i=>{state.checked[i]=!state.checked[i];render();};
+window.delRecipe=id=>{if(confirm("Delete this recipe?")){persist(recipes.filter(r=>r.id!==id));go("list");}};
+
+function parseCode(raw){
+  let t=(raw||"").trim().replace(/^```json/i,"").replace(/^```/,"").replace(/```$/,"").trim();
+  const m=t.match(/\{[\s\S]*\}/); if(m)t=m[0];
+  const o=JSON.parse(t);
+  return o;
+}
+
+function attach(){
+  if(state.view==="list"){
+    const s=document.getElementById("search");
+    if(s)s.oninput=e=>{
+      state.q=e.target.value;
+      const filtered=recipes.filter(r=>!state.q||(r.title||"").toLowerCase().includes(state.q.toLowerCase()));
+      const list=sortRecipes(filtered);
+      const grid=document.querySelector(".grid");
+      const html=list.length?list.map(r=>`
+        <div class="card" onclick="go('detail','${r.id}')">
+          <div class="img" style="background:${r.image?`url(${r.image})`:`linear-gradient(135deg,#5E6B5222,#C0492E22)`};background-size:cover;background-position:center"></div>
+          <div class="body"><h3>${esc(r.title)}</h3><div class="meta">
+            ${r.rating?`<span class="stars">${starStr(r.rating)}</span>`:""}
+            ${r.time?`<span>${esc(r.time)}</span>`:""}${r.servings?`<span>${esc(r.servings)}</span>`:""}
+          </div></div></div>`).join(""):"";
+      if(grid)grid.innerHTML=html;
+    };
+    const sel=document.getElementById("sortsel");
+    if(sel)sel.onchange=e=>{state.sort=e.target.value;render();};
+  }
+  if(state.view==="import"){
+    const btn=document.getElementById("impBtn");
+    btn.onclick=()=>{
+      const errEl=document.getElementById("impErr"),okEl=document.getElementById("impOk");
+      errEl.textContent="";okEl.textContent="";
+      const raw=document.getElementById("codeIn").value;
+      if(!raw.trim()){errEl.textContent="Paste the recipe code first.";return;}
+      let o; try{o=parseCode(raw);}catch(e){errEl.textContent="That doesn't look like a valid recipe code. Make sure you copied the whole line Claude gave you.";return;}
+      if(o.error){errEl.textContent=o.error;return;}
+      if(!o.title){errEl.textContent="No title found in that code.";return;}
+      state.draft={
+        title:o.title||"",servings:o.servings||"",time:o.time||"",source:o.source||"",
+        ingredients:o.ingredients||[],steps:o.steps||[],notes:o.notes||[],image:"",rating:o.rating||0
+      };
+      okEl.textContent="Recipe read successfully — opening for review…";
+      setTimeout(()=>go("add"),400);
+    };
+  }
+  if(state.view==="add"||state.view==="edit"){
+    const editing=state.view==="edit";
+    const target=editing?activeRecipe():state.draft;
+    const drop=document.getElementById("drop"),file=document.getElementById("file");
+    drop.onclick=()=>file.click();
+    file.onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{target.image=rd.result;render();};rd.readAsDataURL(f);};
+    const rm=document.getElementById("rmImg");if(rm)rm.onclick=e=>{e.stopPropagation();target.image="";render();};
+    document.querySelectorAll("#rate span").forEach(sp=>sp.onclick=()=>{target.rating=parseInt(sp.dataset.n);render();});
+    document.getElementById("saveBtn").onclick=()=>{
+      const g=id=>document.getElementById(id).value;
+      const lines=id=>g(id).split("\n").map(s=>s.trim()).filter(Boolean);
+      const title=g("f_title").trim();if(!title)return;
+      const rec={
+        id:editing?activeRecipe().id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+        added:editing?(activeRecipe().added||Date.now()):Date.now(),
+        title,servings:g("f_servings").trim(),time:g("f_time").trim(),
+        image:target.image||"",source:g("f_source").trim(),rating:target.rating||0,
+        ingredients:lines("f_ing"),steps:lines("f_steps"),notes:lines("f_notes")
+      };
+      const next=editing?recipes.map(x=>x.id===rec.id?rec:x):[rec,...recipes];
+      persist(next);state.draft={};go("detail",rec.id);
+    };
+  }
+}
+</script>
+</body>
+</html>
